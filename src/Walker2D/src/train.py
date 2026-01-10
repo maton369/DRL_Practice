@@ -155,17 +155,19 @@ def _train(sess, env, policy_estimator, value_estimator):
       - baseline を入れることで分散低減を狙っている（REINFORCE with baseline）
     """
     # 結果を出力するディレクトリ（タイムスタンプ付き）
-    result_dir = "./result/walker2d/{now_str}".format(now_str=now_str(str_format="%Y%m%d_%H%M%S"))
+    result_dir = "./result/walker2d/{now_str}".format(
+        now_str=now_str(str_format="%Y%m%d_%H%M%S")
+    )
     os.makedirs(result_dir, exist_ok=True)
     print("result_dir_{}".format(result_dir))
 
     # -------------------------------
     # 学習ハイパーパラメータ
     # -------------------------------
-    num_episodes = 500000          # 学習エピソード数（非常に大きいので長時間実行前提）
-    max_episode_steps = 200        # 1エピソードの最大ステップ数
-    gamma = 0.99                   # 割引率 γ
-    model_save_interval = 10000    # 方策ネットワークの保存間隔（エピソード単位）
+    num_episodes = 500000  # 学習エピソード数（非常に大きいので長時間実行前提）
+    max_episode_steps = 200  # 1エピソードの最大ステップ数
+    gamma = 0.99  # 割引率 γ
+    model_save_interval = 10000  # 方策ネットワークの保存間隔（エピソード単位）
 
     # -------------------------------
     # ログファイルのパス
@@ -250,7 +252,7 @@ def _train(sess, env, policy_estimator, value_estimator):
             # 割引報酬和（モンテカルロリターン）:
             #   G_t = r_t + γ r_{t+1} + γ^2 r_{t+2} + ...
             # --------------------------------------------------------
-            target = sum((gamma ** i) * t2.reward for i, t2 in enumerate(episode[t:]))
+            target = sum((gamma**i) * t2.reward for i, t2 in enumerate(episode[t:]))
 
             # --------------------------------------------------------
             # baseline（Critic）:
@@ -300,13 +302,14 @@ def _train(sess, env, policy_estimator, value_estimator):
         # ============================================================
         if i_episode % 100 == 0:
             # 直近100エピソード平均（最初の100未満は i_episode で割る）
-            denom = (i_episode if i_episode < 100 else 100)
+            denom = i_episode if i_episode < 100 else 100
             last_100_steps_avg = float(np.sum(last_100_steps) / denom)
             last_100_score_avg = float(np.sum(last_100_score) / denom)
 
             print(
-                "episode_{} last100_steps_avg_{} last100_score_avg_{}"
-                .format(i_episode, last_100_steps_avg, last_100_score_avg)
+                "episode_{} last100_steps_avg_{} last100_score_avg_{}".format(
+                    i_episode, last_100_steps_avg, last_100_score_avg
+                )
             )
 
             # 学習曲線（移動平均）を更新して保存
